@@ -11,12 +11,13 @@ export const WindowsArea = () => {
   const [activeAppZIndex, setActiveAppZIndex] = useAtom(activeAppZIndexStore);
 
   // Update the active app Z Index here
+  //
   useEffect(() => {
     setActiveAppZIndex(activeAppZIndex + 2);
   }, [activeApp]);
 
   return (
-    <section className={css.container}>
+    <section class={css.container}>
       {Object.keys(appsConfig).map(
         (appID) =>
           openApps[appID] &&

@@ -1,18 +1,23 @@
+import clsx from 'clsx';
+import { useAtom } from 'jotai';
 import { useImmerAtom } from 'jotai/immer';
-import { ButtonBase } from '__/components/utils/ButtonBase';
-import { AppID, openAppsStore } from '__/stores/apps.store';
-import css from './TrafficLights.module.scss';
+import { appsConfig } from '__/data/apps/apps-config';
 import { CloseIcon } from '__/assets/traffic-icons/Close.svg';
 import { MinimizeIcon } from '__/assets/traffic-icons/Minimize.svg';
-import { StretchIcon } from '__/assets/traffic-icons/Stretch.svg';
+import { GreenLightIcon } from '__/assets/traffic-icons/GreenLightIcon';
+import { ButtonBase } from '__/components/utils/ButtonBase';
+import { activeAppStore, AppID, openAppsStore } from '__/stores/apps.store';
+import css from './TrafficLights.module.scss';
 
 type TrafficLightProps = {
   appID: AppID;
   onMaximizeClick: () => void;
+  class?: string | null;
 };
 
-export const TrafficLights = ({ appID, onMaximizeClick }: TrafficLightProps) => {
+export const TrafficLights = ({ appID, onMaximizeClick, class: className }: TrafficLightProps) => {
   const [, setOpenApps] = useImmerAtom(openAppsStore);
+  const [activeApp] = useAtom(activeAppStore);
 
   const closeApp = () =>
     setOpenApps((openApps) => {
@@ -20,20 +25,24 @@ export const TrafficLights = ({ appID, onMaximizeClick }: TrafficLightProps) => 
       return openApps;
     });
 
-  const maximizeApp = () => {
-    onMaximizeClick();
+  const greenLightAction = () => {
+    if (appsConfig[appID].expandable) {
+      // Action not available right now!
+    } else {
+      onMaximizeClick();
+    }
   };
 
   return (
-    <div className={css.container}>
-      <ButtonBase className={css.closeLight} onClick={closeApp}>
+    <div class={clsx(css.container, activeApp !== appID && css.unFocussed, className)}>
+      <ButtonBase class={css.closeLight} onClick={closeApp}>
         <CloseIcon />
       </ButtonBase>
-      <ButtonBase className={css.minimizeLight}>
+      <ButtonBase class={css.minimizeLight}>
         <MinimizeIcon />
       </ButtonBase>
-      <ButtonBase className={css.stretchLight} onClick={maximizeApp}>
-        <StretchIcon />
+      <ButtonBase class={css.stretchLight} onClick={greenLightAction}>
+        <GreenLightIcon {...appsConfig[appID]} />
       </ButtonBase>
     </div>
   );
